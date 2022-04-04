@@ -18,7 +18,8 @@
  *
  * Actually only pause and fork are needed inline, so that there
  * won't be any messing with the stack from main(), but we define
- * some othe cgit
+ * some others too.
+ */
 static inline _syscall0(int,fork)
 static inline _syscall0(int,pause)
 static inline _syscall1(int,setup,void *,BIOS)
