@@ -26,7 +26,6 @@ void release(struct task_struct * p)
 		if (task[i]==p) {
 			task[i]=NULL;
 			free_page((long)p);
-			
 			schedule();
 			return;
 		}
@@ -107,7 +106,7 @@ int do_exit(long code)
 	free_page_tables(get_base(current->ldt[2]),get_limit(0x17));
 	for (i=0 ; i<NR_TASKS ; i++)
 		if (task[i] && task[i]->father == current->pid) {
-			task[i]->father = 1;// kill current，需要先更改它的孩子们的父亲
+			task[i]->father = 1;
 			if (task[i]->state == TASK_ZOMBIE)
 				/* assumption task[1] is always init */
 				(void) send_sig(SIGCHLD, task[1], 1);
@@ -128,7 +127,6 @@ int do_exit(long code)
 	if (current->leader)
 		kill_session();
 	current->state = TASK_ZOMBIE;
-	fprintk(3, "%ld\t%c\t%ld\n", current->pid, 'E', jiffies);
 	current->exit_code = code;
 	tell_father(current->father);
 	schedule();
@@ -174,6 +172,7 @@ repeat:
 				current->cstime += (*p)->stime;
 				flag = (*p)->pid;
 				code = (*p)->exit_code;
+fprintk(3,"%ld\t%c\t%ld\n",flag,'E',jiffies);  
 				release(*p);
 				put_fs_long(code,stat_addr);
 				return flag;
@@ -186,7 +185,8 @@ repeat:
 		if (options & WNOHANG)
 			return 0;
 		current->state=TASK_INTERRUPTIBLE;
-		fprintk(3, "%ld\t%c\t%ld\n", current->pid, 'W', jiffies);
+if (current->pid!=0)  
+	fprintk(3,"%ld\t%c\t%ld\n",current->pid,'W',jiffies);
 		schedule();
 		if (!(current->signal &= ~(1<<(SIGCHLD-1))))
 			goto repeat;
