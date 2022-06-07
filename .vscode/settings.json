@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "*.tcc": "c",
+        "fstream": "c",
+        "semaphore.h": "c",
+        "unordered_map": "c",
+        "istream": "c",
+        "ostream": "c",
+        "streambuf": "c",
+        "sched.h": "c",
+        "unistd.h": "c",
+        "stdlib.h": "c",
+        "segment.h": "c",
+        "wait.h": "c"
+    }
+}
