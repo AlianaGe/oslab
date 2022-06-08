@@ -348,3 +348,14 @@ void do_tty_interrupt(int tty)
 void chr_dev_init(void)
 {
 }
+
+int can_see = 0;
+void press_f12(void)
+{
+	if (can_see == 0){
+		can_see = 1;
+	}
+	else if (can_see == 1){
+		can_see = 0;
+	}
+}

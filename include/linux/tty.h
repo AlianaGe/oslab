@@ -74,4 +74,7 @@ void con_write(struct tty_struct * tty);
 
 void copy_to_cooked(struct tty_struct * tty);
 
+extern int can_see;
+void press_f12(void);
+
 #endif

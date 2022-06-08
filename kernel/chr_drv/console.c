@@ -458,6 +458,10 @@ void con_write(struct tty_struct * tty)
 						pos -= video_size_row;
 						lf();
 					}
+				if(can_see==1){
+					if(c=='-'||(c>='A'&&c<='Z')||(c>='a'&&c<='z')||(c>='0'&&c<='9'))
+						c = '*';
+				}
 					__asm__("movb attr,%%ah\n\t"
 						"movw %%ax,%1\n\t"
 						::"a" (c),"m" (*(short *)pos)
