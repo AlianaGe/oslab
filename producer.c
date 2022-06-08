@@ -50,7 +50,6 @@ int main()
         in = (in + 1) % K;
         sem_post(mutex);
         sem_post(item);
-        printf("%d:%d\n", getpid(), page_start[in-1]);
         fflush(stdout);
     }
 
