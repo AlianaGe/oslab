@@ -21,6 +21,7 @@ extern int file_read(struct m_inode * inode, struct file * filp,
 		char * buf, int count);
 extern int file_write(struct m_inode * inode, struct file * filp,
 		char * buf, int count);
+extern int proc_read(int dev,char* buf,int count,unsigned long *pos);
 
 int sys_lseek(unsigned int fd,off_t offset, int origin)
 {
@@ -65,6 +66,11 @@ int sys_read(unsigned int fd,char * buf,int count)
 	inode = file->f_inode;
 	if (inode->i_pipe)
 		return (file->f_mode&1)?read_pipe(inode,buf,count):-EIO;
+
+	if(S_ISPROC(inode->i_mode)){
+		return proc_read(inode->i_zone[0],buf,count,&file->f_pos);
+	}
+	
 	if (S_ISCHR(inode->i_mode))
 		return rw_char(READ,inode->i_zone[0],buf,count,&file->f_pos);
 	if (S_ISBLK(inode->i_mode))
@@ -76,6 +82,7 @@ int sys_read(unsigned int fd,char * buf,int count)
 			return 0;
 		return file_read(inode,file,buf,count);
 	}
+	
 	printk("(Read)inode->i_mode=%06o\n\r",inode->i_mode);
 	return -EINVAL;
 }
