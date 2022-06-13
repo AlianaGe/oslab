@@ -50,6 +50,9 @@ extern void mem_use(void);
 extern int timer_interrupt(void);
 extern int system_call(void);
 
+extern long switch_to(struct task_struct *p, unsigned long address);
+extern long first_return_from_kernel(void);
+
 union task_union {
 	struct task_struct task;
 	char stack[PAGE_SIZE];
@@ -63,7 +66,8 @@ struct task_struct *current = &(init_task.task);
 struct task_struct *last_task_used_math = NULL;
 
 struct task_struct * task[NR_TASKS] = {&(init_task.task), };
-
+struct tast_struct *pnext = &(init_task.task);
+struct tss_struct * tss = &(init_task.task.tss);
 long user_stack [ PAGE_SIZE>>2 ] ;
 
 struct {
@@ -120,7 +124,6 @@ void schedule(void)
 		}
 
 /* this is the scheduler proper: */
-
 	while (1) {
 		c = -1;
 		next = 0;
@@ -130,7 +133,7 @@ void schedule(void)
 			if (!*--p)
 				continue;
 			if ((*p)->state == TASK_RUNNING && (*p)->counter > c)
-				c = (*p)->counter, next = i;
+    			c = (*p)->counter, next = i, pnext = *p;
 		}
 		if (c) break;
 		for(p = &LAST_TASK ; p > &FIRST_TASK ; --p)
@@ -138,7 +141,7 @@ void schedule(void)
 				(*p)->counter = ((*p)->counter >> 1) +
 						(*p)->priority;
 	}
-	switch_to(next);
+	switch_to(pnext,_LDT(next));
 }
 
 int sys_pause(void)
